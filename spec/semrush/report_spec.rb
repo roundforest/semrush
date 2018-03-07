@@ -10,16 +10,28 @@ describe "Reports:" do
 
   describe Semrush, "running basic reports" do
     it "works with the root method 'domain_rank'" do
-      lambda{Semrush::Report.new.domain_rank(:request_type => :domain, :request => "seobook.com", :db => :us, :limit => 5)}.should_not raise_error
+      lambda{Semrush::Report.new.domain_rank(:request_type => :domain, :request => "sheknows.com/best-reviews/top-10", :db => :us, :limit => 5)}.should_not raise_error
+    end
+  end
+
+  describe Semrush, "running basic reports" do
+    it "works with the root method 'domain_rank'" do
+      lambda{Semrush::Report.new.backlinks_overview(:request_type => :domain, :request => 'sheknows.com/best-reviews/top-10', limit: 2)}
+    end
+  end
+
+  describe Semrush, "running basic reports" do
+    it "works with the root method 'domain_rank'" do
+      lambda{Semrush::Report.new.backlinks(:request_type => :domain, :request => 'sheknows.com/best-reviews/top-10', limit: 2)}
     end
   end
 
   describe Semrush, "running domain reports" do
     it "initializes correctly" do
-      lambda{Semrush::Report.domain("seobook.com", :db => :us)}.should_not raise_error
+      lambda{Semrush::Report.domain("sheknows.com/best-reviews/top-10", :db => :us)}.should_not raise_error
     end
     it "initializes correctly with params" do
-      lambda{Semrush::Report.domain("seobook.com", :db => :us)}.should_not raise_error
+      lambda{Semrush::Report.domain("sheknows.com/best-reviews/top-10", :db => :us)}.should_not raise_error
     end
 
     it 'handles domains with no keywords' do
@@ -28,7 +40,7 @@ describe "Reports:" do
 
     [:basics, :organic, :adwords].each do |method|
       it "works with the method '#{method}'" do
-        lambda{@parsed = Semrush::Report.domain("seobook.com").send(method, :db => :us, :limit => 5)}.should_not raise_error
+        lambda{@parsed = Semrush::Report.domain("sheknows.com/best-reviews/top-10").send(method, :db => :us, :limit => 5)}.should_not raise_error
         @parsed.should_not be_nil
         @parsed.should be_a_kind_of(Array)
         @parsed.first.should be_a_kind_of(Hash) if !@parsed.first.nil?
@@ -39,14 +51,14 @@ describe "Reports:" do
 
   describe Semrush, "running url reports" do
     it "initializes correctly" do
-      lambda{Semrush::Report.url("http://tools.seobook.com/", :db => :us)}.should_not raise_error
+      lambda{Semrush::Report.url("http://tools.sheknows.com/best-reviews/top-10/", :db => :us)}.should_not raise_error
     end
     it "initializes correctly with params" do
-      lambda{Semrush::Report.url("http://tools.seobook.com/", :db => :us)}.should_not raise_error
+      lambda{Semrush::Report.url("http://tools.sheknows.com/best-reviews/top-10/", :db => :us)}.should_not raise_error
     end
     [:organic, :adwords].each do |method|
       it "works with the method '#{method}'" do
-        lambda{@parsed = Semrush::Report.url("http://tools.seobook.com/").send(method, :db => :us, :limit => 5)}.should_not raise_error
+        lambda{@parsed = Semrush::Report.url("http://tools.sheknows.com/best-reviews/top-10/").send(method, :db => :us, :limit => 5)}.should_not raise_error
         @parsed.should_not be_nil
         @parsed.should be_a_kind_of(Array)
         @parsed.first.should be_a_kind_of(Hash) if !@parsed.first.nil?
@@ -54,7 +66,7 @@ describe "Reports:" do
     end
     [:basics, :competitors_organic, :competitors_adwords, :competitors_organic_by_adwords, :competitors_adwords_by_organic].each do |method|
       it "should not work with the method '#{method}'" do
-        lambda{@parsed = Semrush::Report.url("http://tools.seobook.com/").send(method, :db => :us, :limit => 5)}.should raise_error
+        lambda{@parsed = Semrush::Report.url("http://tools.sheknows.com/best-reviews/top-10/").send(method, :db => :us, :limit => 5)}.should raise_error
       end
     end
   end
@@ -90,14 +102,14 @@ describe "Reports:" do
 
   describe Semrush, "parameters positions in reports" do
     it "could be set in the class method" do
-      lambda{Semrush::Report.domain("seobook.com", :db => :fr, :limit => 5, :offset => 2)}.should_not raise_error
+      lambda{Semrush::Report.domain("sheknows.com/best-reviews/top-10", :db => :fr, :limit => 5, :offset => 2)}.should_not raise_error
     end
     it "could be set in the instance method" do
-      lambda{Semrush::Report.domain("seobook.com").organic(:db => :fr, :limit => 5, :offset => 2)}.should_not raise_error
+      lambda{Semrush::Report.domain("sheknows.com/best-reviews/top-10").organic(:db => :fr, :limit => 5, :offset => 2)}.should_not raise_error
     end
     it "both methods get the same results" do
-      in_class = Semrush::Report.domain("seobook.com", :db => :fr, :limit => 5, :offset => 2).organic
-      in_object = Semrush::Report.domain("seobook.com").organic(:db => :fr, :limit => 5, :offset => 2)
+      in_class = Semrush::Report.domain("sheknows.com/best-reviews/top-10", :db => :fr, :limit => 5, :offset => 2).organic
+      in_object = Semrush::Report.domain("sheknows.com/best-reviews/top-10").organic(:db => :fr, :limit => 5, :offset => 2)
       in_class.should == in_object
     end
   end
