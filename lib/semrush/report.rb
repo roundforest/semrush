@@ -10,7 +10,7 @@ module Semrush
     DBS = [:us, :uk, :ca, :ru, :de, :fr, :es, :it, :br, :au, :ar, :be, :ch, :dk, :fi, :hk, :ie, :il, :mx, :nl, :no, :pl, :se, :sg, :tr] #"us" - for Google.com, "uk" - for Google.co.uk, "ru" - for Google.ru, "de" for Google.de, "fr" for Google.fr, "es" for Google.es, "it" for Google.it Beta, "br" for Google.com.br Beta, "au" for Google.com.au Beta, etc
     REPORT_TYPES = [:domain_rank, :domain_organic, :domain_adwords, :domain_organic_organic, :domain_adwords_adwords, :domain_organic_adwords, :domain_adwords_organic, :domain_adwords_historical,
                     :phrase_this, :phrase_organic, :phrase_related, :phrase_adwords_historical, :phrase_fullsearch, :phrase_kdi,
-                    :url_organic, :url_adwords]
+                    :url_organic, :url_adwords, :backlinks_overview, :backlinks]
     REQUEST_TYPES = [:domain, :phrase, :url]
 
 
@@ -184,6 +184,14 @@ module Semrush
       adwords(params)
     end
 
+    def backlinks_overview params = {}
+      request(params.merge(type: :backlinks_overview, req_type: :analytic))
+    end
+
+    def backlinks params = {}
+      request(params.merge(type: :backlinks, req_type: :analytic))
+    end
+
     # Competitors in organic search report
     # Default columns:
     # * Dn - Sites competing with this site in Google search results, sorted by the number of common keywords
@@ -261,7 +269,7 @@ module Semrush
     def fullsearch params = {}
       request(params.merge(:report_type => :phrase_fullsearch))
     end
-    
+
     # Keyword Difficulty report
     # Usage:
     # > report = Semrush::Report.phrase(phrases.join(';'), database: 'us', limit: 100).kdi
@@ -276,7 +284,9 @@ module Semrush
 
     def request params = {}
       validate_parameters params
-      temp_url = "#{API_REPORT_URL}" #do not copy the constant as is or else the constant would be modified !!
+
+      temp_url = params[:req_type] == :analytic ? "#{API_ANALYTIC_URL}" : "#{API_REPORT_URL}" #do not copy the constant as is or else the constant would be modified !!
+
       @parameters.each {|k, v|
         if v.blank?
           temp_url.gsub!(/&[^&=]+=%#{k.to_s}%/i, '')
@@ -360,8 +370,8 @@ module Semrush
 
       # (thanks http://snippets.dzone.com/posts/show/3899)
       keys = csv.shift.map(&format_key)
-      string_data = csv.map {|row| row.map {|cell| cell.to_s } }
-      string_data.map {|row| Hash[*keys.zip(row).flatten] }
+      string_data = csv.map { |row| row.map { |cell| cell.to_s } }
+      string_data.map { |row| Hash[*keys.zip(row).flatten] }
     rescue CSV::MalformedCSVError => csvife
       tries ||= 0
       if (tries += 1) < 3
