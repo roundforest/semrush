@@ -22,7 +22,6 @@ module Semrush
 
   def self.config
     yield self
-    raise Exception::BadApiKey.new if @@api_key.nil? || @@api_key.empty?
     raise Exception::BadArgument.new(self, "before is not a proc: proc type is required.") unless @@before.is_a?(Proc)
     raise Exception::BadArgument.new(self, "after is not a proc: proc type is required.") unless @@after.is_a?(Proc)
   end
